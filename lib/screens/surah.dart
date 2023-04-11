@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:quran/quran.dart' as quran;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Surah extends StatefulWidget {
   final int surahNumber;
@@ -32,6 +33,12 @@ class _SurahState extends State<Surah> {
 
   @override
   void initState() {
+    SharedPreferences.getInstance().then((prefs) {
+      setState(() {
+        _isEnglish = prefs.getBool("isEnglish") ?? true;
+        _showTranslation = prefs.getBool("showTranslation") ?? true;
+      });
+    });
     super.initState();
     player = AudioPlayer();
   }
@@ -87,6 +94,9 @@ class _SurahState extends State<Surah> {
                         setState(() {
                           _showTranslation = !_showTranslation;
                         });
+                        SharedPreferences.getInstance().then((prefs) {
+                          prefs.setBool("showTranslation", _showTranslation);
+                        });
                       },
                       icon: Icon(_showTranslation
                           ? Icons.subtitles_outlined
@@ -97,6 +107,9 @@ class _SurahState extends State<Surah> {
                       onPressed: () {
                         setState(() {
                           _isEnglish = !_isEnglish;
+                        });
+                        SharedPreferences.getInstance().then((prefs) {
+                          prefs.setBool("isEnglish", _isEnglish);
                         });
                       },
                       icon: const Icon(Icons.translate_rounded),
